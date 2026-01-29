@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English to Kannada Translator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: 600;
+            color: #999;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .translator-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .language-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .language-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .language-box label {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .audio-button {
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .audio-button:hover {
+            background: #f57c00;
+            transform: scale(1.1);
+        }
+
+        .audio-button.active {
+            background: #e53935;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .language-box textarea {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: vertical;
+            min-height: 250px;
+            transition: border-color 0.3s ease;
+        }
+
+        .language-box textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .character-count {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-translate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-translate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-copy {
+            background: #4caf50;
+            color: white;
+            min-width: 150px;
+        }
+
+        .btn-copy:hover {
+            background: #45a049;
+        }
+
+        .btn-download {
+            background: #2196f3;
+            color: white;
+            min-width: 150px;
+        }
+
+        .btn-download:hover {
+            background: #0b7dda;
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+            min-width: 150px;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-stop {
+            background: #e53935;
+            color: white;
+            min-width: 150px;
+        }
+
+        .btn-stop:hover {
+            background: #c62828;
+        }
+
+        .audio-player {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .audio-status {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            border-left: 4px solid #667eea;
+        }
+
+        .audio-status strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .audio-status span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .audio-controls button {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 15px;
+            font-size: 0.95em;
+        }
+
+        .settings-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-item label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .setting-item input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .setting-item input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #667eea;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            border-left: 4px solid #c62828;
+        }
+
+        .error.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .success.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .translator-section {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 English to Kannada Translator</h1>
+            <p>Translate, Listen & Learn</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('translator', this)">📝 Translator</button>
+            <button class="tab-button" onclick="switchTab('audio', this)">🔊 Audio</button>
+            <button class="tab-button" onclick="switchTab('settings', this)">⚙️ Settings</button>
+        </div>
+
+        <!-- Translator Tab -->
+        <div id="translator" class="tab-content active">
+            <form id="translatorForm">
+                <div class="translator-section">
+                    <div class="language-box">
+                        <div class="language-header">
+                            <label for="englishText">English (Source)</label>
+                            <button type="button" class="audio-button" id="playEnglish" title="Speak English">🔊</button>
+                        </div>
+                        <textarea id="englishText" placeholder="Enter English text here..." maxlength="5000"></textarea>
+                        <div class="character-count"><span id="englishCount">0</span> / 5000 characters</div>
+                    </div>
+
+                    <div class="language-box">
+                        <div class="language-header">
+                            <label for="kannadaText">Kannada (Translation)</label>
+                            <button type="button" class="audio-button" id="playKannada" title="Speak Kannada">🔊</button>
+                        </div>
+                        <textarea id="kannadaText" placeholder="Kannada translation will appear here..." readonly></textarea>
+                        <div class="character-count"><span id="kannadaCount">0</span> characters</div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-translate">🔄 Translate</button>
+                    <button type="button" class="btn-copy" onclick="copyToClipboard()">📋 Copy</button>
+                    <button type="button" class="btn-download" onclick="downloadTranslation()">⬇️ Download</button>
+                    <button type="button" class="btn-clear" onclick="clearForm()">🗑️ Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Audio Tab -->
+        <div id="audio" class="tab-content">
+            <div class="audio-player">
+                <h3 style="color: #333; margin-bottom: 15px;">🎤 English Audio</h3>
+                <div class="audio-status">
+                    <strong>Status:</strong>
+                    <span id="englishAudioStatus">Ready to speak</span>
+                </div>
+                <div class="audio-controls">
+                    <button type="button" class="btn-translate" onclick="playEnglishAudio()">▶️ Speak English</button>
+                    <button type="button" class="btn-stop" onclick="stopAudio()">⏹️ Stop</button>
+                </div>
+            </div>
+
+            <div class="audio-player">
+                <h3 style="color: #333; margin-bottom: 15px;">🎙️ Kannada Audio</h3>
+                <div class="audio-status">
+                    <strong>Status:</strong>
+                    <span id="kannadaAudioStatus">Ready to speak</span>
+                </div>
+                <div class="audio-controls">
+                    <button type="button" class="btn-translate" onclick="playKannadaAudio()">▶️ Speak Kannada</button>
+                    <button type="button" class="btn-stop" onclick="stopAudio()">⏹️ Stop</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="settings-panel">
+                <div class="setting-item">
+                    <label for="englishRate">English Speech Rate:</label>
+                    <input type="range" id="englishRate" min="0.5" max="2" step="0.1" value="1">
+                    <small style="color: #666; margin-top: 5px;">Speed: <span id="englishRateDisplay">1.0</span>x</small>
+                </div>
+
+                <div class="setting-item">
+                    <label for="kannadaRate">Kannada Speech Rate:</label>
+                    <input type="range" id="kannadaRate" min="0.5" max="2" step="0.1" value="1">
+                    <small style="color: #666; margin-top: 5px;">Speed: <span id="kannadaRateDisplay">1.0</span>x</small>
+                </div>
+            </div>
+            <button type="button" class="btn-translate" onclick="testAudio()" style="width: 100%; margin-top: 20px;">🔊 Test Audio</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing...</div>
+        </div>
+
+        <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
+
+        <div class="footer">
+            <p>💡 Translate up to 5000 characters | 🎵 Audio support available | 🔊 Make sure volume is ON</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('translatorForm');
+        const englishText = document.getElementById('englishText');
+        const kannadaText = document.getElementById('kannadaText');
+        const englishCount = document.getElementById('englishCount');
+        const kannadaCount = document.getElementById('kannadaCount');
+        const loading = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const successDiv = document.getElementById('success');
+
+        // Audio state
+        let currentUtterance = null;
+        const synth = window.speechSynthesis;
+
+        // Check Speech Synthesis support
+        if (!synth) {
+            showError('Speech synthesis not supported in your browser');
+        }
+
+        // Tab switching
+        function switchTab(tabName, button) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            button.classList.add('active');
+        }
+
+        // Character counter
+        englishText.addEventListener('input', () => {
+            englishCount.textContent = englishText.value.length;
+        });
+
+        // Audio button listeners
+        document.getElementById('playEnglish').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (englishText.value.trim()) {
+                playEnglishAudio();
+            } else {
+                showError('Enter English text first');
+            }
+        });
+
+        document.getElementById('playKannada').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (kannadaText.value.trim()) {
+                playKannadaAudio();
+            } else {
+                showError('Translate text first');
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = englishText.value.trim();
+            if (!text) {
+                showError('Please enter English text');
+                return;
+            }
+            await translateText(text);
+        });
+
+        async function translateText(text) {
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text, target_language: 'kn' })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || 'Translation failed');
+                }
+
+                kannadaText.value = data.translated;
+                kannadaCount.textContent = data.translated.length;
+                showSuccess('Translation successful! 🎉');
+            } catch (error) {
+                showError(error.message || 'Translation failed');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function speakText(text, lang) {
+            try {
+                // Check if browser supports Speech Synthesis
+                if (!synth) {
+                    showError('Speech synthesis not supported');
+                    return;
+                }
+                
+                // Cancel any ongoing speech
+                synth.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set language
+                utterance.lang = lang === 'kn' ? 'kn-IN' : 'en-US';
+                
+                // Get rate from slider
+                const rateSlider = lang === 'kn' ? document.getElementById('kannadaRate') : document.getElementById('englishRate');
+                const rate = parseFloat(rateSlider.value) || 1;
+                
+                utterance.rate = Math.min(Math.max(rate, 0.5), 2);
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
+                // Update status
+                const statusEl = lang === 'kn' ? document.getElementById('kannadaAudioStatus') : document.getElementById('englishAudioStatus');
+                
+                // Event listeners
+                utterance.onstart = () => {
+                    statusEl.textContent = '🔊 Speaking...';
+                    statusEl.style.color = '#ff9800';
+                    const btn = lang === 'kn' ? document.getElementById('playKannada') : document.getElementById('playEnglish');
+                    btn.classList.add('active');
+                };
+                
+                utterance.onerror = (event) => {
+                    statusEl.textContent = `❌ Error: ${event.error}`;
+                    statusEl.style.color = '#c62828';
+                    showError(`Audio error: ${event.error}`);
+                };
+                
+                utterance.onend = () => {
+                    statusEl.textContent = '✓ Completed';
+                    statusEl.style.color = '#4caf50';
+                    const btn = lang === 'kn' ? document.getElementById('playKannada') : document.getElementById('playEnglish');
+                    btn.classList.remove('active');
+                };
+                
+                currentUtterance = utterance;
+                synth.speak(utterance);
+            } catch (error) {
+                showError(`Audio error: ${error.message}`);
+                console.error('Audio error:', error);
+            }
+        }
+
+        function playEnglishAudio() {
+            if (!englishText.value.trim()) {
+                showError('Enter English text first');
+                return;
+            }
+            speakText(englishText.value, 'en');
+        }
+
+        function playKannadaAudio() {
+            if (!kannadaText.value.trim()) {
+                showError('Translate text first');
+                return;
+            }
+            speakText(kannadaText.value, 'kn');
+        }
+
+        function stopAudio() {
+            synth.cancel();
+            document.getElementById('englishAudioStatus').textContent = 'Stopped';
+            document.getElementById('englishAudioStatus').style.color = '#667eea';
+            document.getElementById('kannadaAudioStatus').textContent = 'Stopped';
+            document.getElementById('kannadaAudioStatus').style.color = '#667eea';
+            document.getElementById('playEnglish').classList.remove('active');
+            document.getElementById('playKannada').classList.remove('active');
+            showSuccess('Audio stopped ⏹️');
+        }
+
+        function testAudio() {
+            showSuccess('Testing audio... 🔊');
+            setTimeout(() => {
+                speakText('Hello world', 'en');
+            }, 500);
+            setTimeout(() => {
+                speakText('ನಮಸ್ಕಾರ ವಿಶ್ವ', 'kn');
+            }, 3000);
+        }
+
+        function copyToClipboard() {
+            if (!kannadaText.value) {
+                showError('No translation to copy');
+                return;
+            }
+            navigator.clipboard.writeText(kannadaText.value).then(() => {
+                showSuccess('Copied to clipboard! 📋');
+            });
+        }
+
+        function downloadTranslation() {
+            if (!englishText.value || !kannadaText.value) {
+                showError('Translate text first');
+                return;
+            }
+            const content = `English: ${englishText.value}\n\nKannada: ${kannadaText.value}`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `translation_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showSuccess('Downloaded! ⬇️');
+        }
+
+        function clearForm() {
+            englishText.value = '';
+            kannadaText.value = '';
+            englishCount.textContent = '0';
+            kannadaCount.textContent = '0';
+            stopAudio();
+            englishText.focus();
+        }
+
+        function showError(msg) {
+            errorDiv.textContent = msg;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 4000);
+        }
+
+        function showSuccess(msg) {
+            successDiv.textContent = msg;
+            successDiv.classList.add('show');
+            setTimeout(() => successDiv.classList.remove('show'), 4000);
+        }
+
+        // Update display values for sliders
+        document.getElementById('englishRate').addEventListener('input', (e) => {
+            document.getElementById('englishRateDisplay').textContent = e.target.value;
+        });
+
+        document.getElementById('kannadaRate').addEventListener('input', (e) => {
+            document.getElementById('kannadaRateDisplay').textContent = e.target.value;
+        });
+
+        // Initialize
+        englishText.focus();
+        
+        // Log that page is ready
+        console.log('Translator page loaded');
+        console.log('Speech Synthesis API available:', !!synth);
+    </script>
+</body>
+</html>
